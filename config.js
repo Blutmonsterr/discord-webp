@@ -23,7 +23,7 @@ const CONFIG = {
 
     // Partner Servers
     PARTNERS: {
-        ENABLED: false,          // Set to false to disable the entire partner section
+        ENABLED: true,          // Set to false to disable the entire partner section
         LIST: [                 // Max 12 partners
             { id: '324167053516734465'}, // Example: Daddeln.at ID: 324167053516734465
         ]
