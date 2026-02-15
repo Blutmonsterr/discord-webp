@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Community Beitreten</title>
+    <meta name="description" content="Eine Einladung zu einem Discord Server." id="meta-description">
+    <meta property="og:title" content="Tritt unserem Discord Server bei!" id="og-title">
+    <meta property="og:description" content="Klicke hier, um der Community beizutreten." id="og-description">
+    <meta name="theme-color" content="#5865F2">
+
+    <link rel="icon" href="https://cdn.discordapp.com/embed/avatars/0.png" type="image/png" id="favicon">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <script src="config.js"></script>
+    <script src="js/lang/de.js"></script>
+    <script src="js/lang/en.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/particles.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/partners.js"></script>
+    <script src="js/base.js"></script>
+
+
+
+</head>
+<body>
+
+    <canvas id="particles"></canvas>
+    <div class="background"></div>
+
+    <div id="spinner-wrapper" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; z-index: 10000;">
+        <div id="loading-spinner" class="spinner"></div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; width: 100%; height: 100vh; overflow-y: auto; position: relative; z-index: 5;">
+        <div style="margin: auto; display: flex; flex-direction: column; align-items: center; padding: 50px 0; width: 100%;">
+    <div class="card" style="display: none;">
+        <div class="server-icon">
+            <img id="guild-icon" src="https://cdn.discordapp.com/embed/avatars/0.png" alt="Lade Server Icon...">
+        </div>
+        
+        <p class="invite-label">Du wurdest eingeladen, einem Server beizutreten</p>
+
+        <h1 id="guild-name">Lade Server...</h1>
+        
+        <div class="status-container">
+            <div class="status-item">
+                <span class="dot online"></span>
+                <span id="online-count">0</span> <span id="label-online">Online</span>
+            </div>
+            <div class="status-item">
+                <span class="dot total"></span>
+                <span id="member-count">0</span> <span id="label-members">Mitglieder</span>
+            </div>
+        </div>
+
+        <div id="members-list" class="members-list"></div>
+
+        <a id="join-btn" href="#" target="_blank" class="join-button">
+            <i class="fab fa-discord"></i> Beitreten
+        </a>
+
+        <button id="copy-btn" class="copy-button" style="display: none;">
+            <i class="fas fa-copy"></i> Link kopieren
+        </button>
+
+        <div id="social-media-container" class="social-media-container"></div>
+
+        <button id="toggle-partners-btn" class="toggle-partners-button" style="display: none;">
+            <i class="fas fa-handshake"></i> <span id="label-partners-toggle">Partner anzeigen</span>
+        </button>
+    </div>
+
+    <div id="partners-card" class="card partners-card" style="display: none; margin-top: 50px;">
+        <div id="partners-container" class="partners-grid"></div>
+    </div>
+    </div>
+
+    <div class="footer" style="padding-bottom: 20px; text-align: center; flex-shrink: 0;">
+        <a href="https://github.com/blutmonsterr" target="_blank">Developed by <i class="fab fa-github"></i> blutmonsterr</a>
+    </div>
+    </div>
+
+    <div id="toast" class="toast">Link in die Zwischenablage kopiert!</div>
+
+
+</body>
+</html>
