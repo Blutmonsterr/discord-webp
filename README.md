@@ -1,6 +1,8 @@
-# Discord Server Landing Page (web-dc)
+# Discord Server Landing Page (discord-webp)
 
 Eine moderne, animierte und hochgradig anpassbare Landing-Page für deinen Discord-Server.
+
+_(🇬🇧 English version below)_
 
 [**🔴 Live Demo ansehen**](https://blutmonsterr.de/github/demo/discord-webp/)
 
@@ -82,7 +84,7 @@ Unter `ANIMATION.PARTICLES.TYPE` kannst du den Effekt einstellen:
 
 ---
 
-# Discord Server Landing Page (web-dc) [English]
+# Discord Server Landing Page (discord-webp) [English]
 
 A modern, animated, and highly customizable landing page for your Discord server.
 
