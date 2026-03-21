@@ -164,9 +164,16 @@ document.addEventListener("DOMContentLoaded", function() {
             guildNameElement.textContent = t.serverNotFound;
             onlineCountElement.textContent = "N/A";
             memberCountElement.textContent = "N/A";
-            joinBtnElement.textContent = t.error;
-            joinBtnElement.style.backgroundColor = "#aa3333";
-            joinBtnElement.style.cursor = "not-allowed";
+
+            if (typeof CONFIG !== 'undefined' && CONFIG.BACKUP_CODE) {
+                joinBtnElement.href = `https://discord.gg/${CONFIG.BACKUP_CODE}`;
+                joinBtnElement.innerHTML = `<i class="fab fa-discord"></i> ${t.join}`;
+                if (copyBtnElement) copyBtnElement.style.display = 'flex';
+            } else {
+                joinBtnElement.textContent = t.error;
+                joinBtnElement.style.backgroundColor = "#aa3333";
+                joinBtnElement.style.cursor = "not-allowed";
+            }
 
             if (spinnerWrapper) spinnerWrapper.style.display = 'none';
             if (mainCard) mainCard.style.display = 'flex';
