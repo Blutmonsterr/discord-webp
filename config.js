@@ -1,15 +1,15 @@
 const CONFIG = {
     // Server ID (Right click on Server -> Copy ID)
     SERVER_ID: '324167053516734465', // '324167053516734465' for Daddeln.at
-    
+    BACKUP_CODE: 'X6bgxcN', // Optional: Backup code for fetching data if API fails (e.g., from a previous successful fetch)
     // Language ('de' or 'en')
-    LANGUAGE: 'en',
+    LANGUAGE: 'de',
 
     // Background image (URL or leave empty for server icon)
     BACKGROUND_IMAGE: 'https://daddeln.at/images/Gaming.jpg',
 
     // Server Icon (URL or leave empty for Discord API icon)
-    SERVER_ICON: 'https://daddeln.at/images/1D.png',
+    SERVER_ICON: 'https://daddeln.at/images/discord/1D.png',
 
     // Max number of members to show in the list
     MAX_MEMBERS: 10,
@@ -23,7 +23,7 @@ const CONFIG = {
 
     // Partner Servers
     PARTNERS: {
-        ENABLED: true,          // Set to false to disable the entire partner section
+        ENABLED: false,          // Set to false to disable the entire partner section
         LIST: [                 // Max 12 partners
             { id: '324167053516734465'}, // Example: Daddeln.at ID: 324167053516734465
         ]
