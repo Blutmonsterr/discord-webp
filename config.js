@@ -12,7 +12,7 @@ const CONFIG = {
     SERVER_ICON: 'https://daddeln.at/images/discord/1D.png',
 
     // Max number of members to show in the list
-    MAX_MEMBERS: 10,
+    MAX_MEMBERS: 15,
 
     // Social Media Links
     SOCIAL_LINKS: [
