@@ -17,7 +17,7 @@ const CONFIG = {
     // Social Media Links
     SOCIAL_LINKS: [
         { icon: 'fas fa-globe', url: '#', name: 'Web' },
-        { icon: 'fas fa-globe', url: '#', name: 'Web' },
+        { icon: 'fas fa-globe', url: 'https://daddeln.at', name: 'Web' },
         { icon: 'fab fa-github', url: 'https://github.com/blutmonsterr/', name: 'GitHub' }
     ],
 
