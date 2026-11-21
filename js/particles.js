@@ -1,3 +1,214 @@
+(function(global) {
+    const DEFAULT_DATES = {
+        HALLOWEEN: { start: '10-25', end: '10-31' },
+        FIREWORKS: { start: '12-31', end: '01-01' },
+        EASTER:    { start: '03-25', end: '04-15' },
+        WINTER:    { start: '11-01', end: '03-01' },
+        SPRING:    { start: '03-02', end: '05-31' },
+        SUMMER:    { start: '06-01', end: '08-31' },
+        AUTUMN:    { start: '09-01', end: '10-24' }
+    };
+
+    // Standard meteorological seasons & fixed holidays used in 'timezone' (and 'auto') mode
+    const TIMEZONE_HOLIDAYS = {
+        HALLOWEEN: { start: '10-25', end: '10-31' },
+        FIREWORKS: { start: '12-31', end: '01-01' }
+    };
+
+    const TIMEZONE_SEASONS = {
+        WINTER: { start: '12-01', end: '02-29' },
+        SPRING: { start: '03-01', end: '05-31' },
+        SUMMER: { start: '06-01', end: '08-31' },
+        AUTUMN: { start: '09-01', end: '11-30' }
+    };
+
+    const SOUTHERN_PREFIXES = [
+        'Australia/',
+        'Antarctica/',
+        'Brazil/',
+        'Chile/',
+        'America/Argentina/'
+    ];
+
+    const SOUTHERN_ZONES = new Set([
+        'NZ', 'NZ-CHAT',
+        'Africa/Blantyre', 'Africa/Brazzaville', 'Africa/Bujumbura', 'Africa/Dar_es_Salaam',
+        'Africa/Gaborone', 'Africa/Harare', 'Africa/Johannesburg', 'Africa/Kigali',
+        'Africa/Kinshasa', 'Africa/Luanda', 'Africa/Lubumbashi', 'Africa/Lusaka',
+        'Africa/Maputo', 'Africa/Maseru', 'Africa/Mbabane', 'Africa/Nairobi', 'Africa/Windhoek',
+        'America/Araguaina', 'America/Asuncion', 'America/Bahia', 'America/Belem',
+        'America/Buenos_Aires', 'America/Campo_Grande', 'America/Catamarca', 'America/Cordoba',
+        'America/Coyhaique', 'America/Cuiaba', 'America/Eirunepe', 'America/Fortaleza',
+        'America/Guayaquil', 'America/Jujuy', 'America/La_Paz', 'America/Lima',
+        'America/Maceio', 'America/Manaus', 'America/Mendoza', 'America/Montevideo',
+        'America/Noronha', 'America/Porto_Velho', 'America/Punta_Arenas', 'America/Recife',
+        'America/Rio_Branco', 'America/Rosario', 'America/Santarem', 'America/Santiago',
+        'America/Sao_Paulo',
+        'Asia/Dili', 'Asia/Jakarta', 'Asia/Jayapura', 'Asia/Makassar', 'Asia/Pontianak',
+        'Asia/Ujung_Pandang',
+        'Atlantic/South_Georgia', 'Atlantic/St_Helena', 'Atlantic/Stanley',
+        'Pacific/Apia', 'Pacific/Auckland', 'Pacific/Bougainville', 'Pacific/Chatham',
+        'Pacific/Easter', 'Pacific/Efate', 'Pacific/Enderbury', 'Pacific/Fakaofo',
+        'Pacific/Fiji', 'Pacific/Funafuti', 'Pacific/Galapagos', 'Pacific/Gambier',
+        'Pacific/Guadalcanal', 'Pacific/Kanton', 'Pacific/Marquesas', 'Pacific/Nauru',
+        'Pacific/Niue', 'Pacific/Norfolk', 'Pacific/Noumea', 'Pacific/Pago_Pago',
+        'Pacific/Pitcairn', 'Pacific/Port_Moresby', 'Pacific/Rarotonga', 'Pacific/Samoa',
+        'Pacific/Tahiti', 'Pacific/Tongatapu', 'Pacific/Wallis'
+    ]);
+
+    const SOUTHERN_SEASON_MAP = {
+        winter: 'summer',
+        summer: 'winter',
+        spring: 'autumn',
+        autumn: 'spring'
+    };
+
+    /**
+     * Resolves configured timezone ('auto' -> browser IANA timezone) and validates it.
+     */
+    function resolveParticleTimeZone(configuredTimeZone) {
+        if (configuredTimeZone && configuredTimeZone !== 'auto') {
+            try {
+                return new Intl.DateTimeFormat('en-US', { timeZone: configuredTimeZone }).resolvedOptions().timeZone || configuredTimeZone;
+            } catch (err) {
+                console.warn(`Invalid particle TIMEZONE "${configuredTimeZone}", falling back to browser timezone.`);
+            }
+        }
+        try {
+            return Intl.DateTimeFormat().resolvedOptions().timeZone || null;
+        } catch (err) {
+            return null;
+        }
+    }
+
+    /**
+     * Extracts Gregorian year, month (1-12), and day (1-31) in the target timezone.
+     */
+    function getDateInTimeZone(timeZone, now = new Date()) {
+        try {
+            const options = {
+                calendar: 'gregory',
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric'
+            };
+            if (timeZone) options.timeZone = timeZone;
+            const parts = new Intl.DateTimeFormat('en-US', options).formatToParts(now);
+            const map = {};
+            parts.forEach(p => { map[p.type] = p.value; });
+            const year = Number(map.year);
+            const month = Number(map.month);
+            const day = Number(map.day);
+            if (year && month && day) {
+                return { year, month, day };
+            }
+        } catch (err) {
+            // Fall through to local Date
+        }
+        return {
+            year: now.getFullYear(),
+            month: now.getMonth() + 1,
+            day: now.getDate()
+        };
+    }
+
+    /**
+     * Checks whether an IANA timezone lies in the Southern Hemisphere.
+     */
+    function isSouthernHemisphere(timeZone) {
+        if (!timeZone) return false;
+        let canonical = timeZone;
+        try {
+            canonical = new Intl.DateTimeFormat('en-US', { timeZone }).resolvedOptions().timeZone || timeZone;
+        } catch (err) {
+            // Use provided string directly
+        }
+        if (SOUTHERN_PREFIXES.some(prefix => canonical.startsWith(prefix))) return true;
+        if (canonical.startsWith('Indian/') && canonical !== 'Indian/Maldives') return true;
+        return SOUTHERN_ZONES.has(canonical) || SOUTHERN_ZONES.has(timeZone);
+    }
+
+    /**
+     * Calculates Easter Sunday for a given Gregorian year (Meeus/Jones/Butcher algorithm)
+     * and returns an 'MM-DD' range spanning Palm Sunday through Easter Monday.
+     */
+    function getEasterDateRange(year, daysBefore = 7, daysAfter = 1) {
+        const a = year % 19;
+        const b = Math.floor(year / 100);
+        const c = year % 100;
+        const d = Math.floor(b / 4);
+        const e = b % 4;
+        const f = Math.floor((b + 8) / 25);
+        const g = Math.floor((b - f + 1) / 3);
+        const h = (19 * a + b - d - g + 15) % 30;
+        const i = Math.floor(c / 4);
+        const k = c % 4;
+        const l = (32 + 2 * e + 2 * i - h - k) % 7;
+        const m = Math.floor((a + 11 * h + 22 * l) / 451);
+        const month = Math.floor((h + l - 7 * m + 114) / 31);
+        const day = ((h + l - 7 * m + 114) % 31) + 1;
+
+        const formatUTC = (dateObj) => {
+            const mm = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
+            const dd = String(dateObj.getUTCDate()).padStart(2, '0');
+            return `${mm}-${dd}`;
+        };
+
+        const startDate = new Date(Date.UTC(year, month - 1, day - daysBefore));
+        const endDate = new Date(Date.UTC(year, month - 1, day + daysAfter));
+        return { start: formatUTC(startDate), end: formatUTC(endDate) };
+    }
+
+    function isDateInRange(currentVal, range) {
+        if (!range || typeof range.start !== 'string' || typeof range.end !== 'string') return false;
+        const [sM, sD] = range.start.split('-').map(Number);
+        const [eM, eD] = range.end.split('-').map(Number);
+        if (!sM || !sD || !eM || !eD) return false;
+        const start = sM * 100 + sD;
+        const end = eM * 100 + eD;
+        if (start <= end) return currentVal >= start && currentVal <= end;
+        return currentVal >= start || currentVal <= end;
+    }
+
+    function matchSeasonOrHoliday(ranges, year, currentVal, invertSeasons) {
+        const easterRange = ranges.EASTER === 'auto'
+            ? getEasterDateRange(year)
+            : ranges.EASTER;
+
+        if (isDateInRange(currentVal, ranges.HALLOWEEN)) return 'halloween';
+        if (isDateInRange(currentVal, ranges.FIREWORKS)) return 'fireworks';
+        if (isDateInRange(currentVal, easterRange)) return 'easter';
+
+        let season = 'winter';
+        if (isDateInRange(currentVal, ranges.WINTER)) season = 'winter';
+        else if (isDateInRange(currentVal, ranges.SPRING)) season = 'spring';
+        else if (isDateInRange(currentVal, ranges.SUMMER)) season = 'summer';
+        else if (isDateInRange(currentVal, ranges.AUTUMN)) season = 'autumn';
+
+        return invertSeasons ? (SOUTHERN_SEASON_MAP[season] || season) : season;
+    }
+
+    /**
+     * Resolves the active particle type from selection mode ('timezone', 'auto', 'dates', or fixed).
+     */
+    function resolveParticleType(mode, dates, configuredTimeZone, now = new Date()) {
+        if (mode === 'timezone' || mode === 'auto') {
+            const timeZone = resolveParticleTimeZone(configuredTimeZone);
+            const { year, month, day } = getDateInTimeZone(timeZone, now);
+            const timezoneRanges = Object.assign({}, TIMEZONE_HOLIDAYS, { EASTER: 'auto' }, TIMEZONE_SEASONS);
+            return matchSeasonOrHoliday(timezoneRanges, year, month * 100 + day, isSouthernHemisphere(timeZone));
+        }
+
+        if (mode === 'dates') {
+            const mergedDates = Object.assign({}, DEFAULT_DATES, dates || {});
+            const year = now.getFullYear();
+            const currentVal = (now.getMonth() + 1) * 100 + now.getDate();
+            return matchSeasonOrHoliday(mergedDates, year, currentVal, false);
+        }
+
+        return mode;
+    }
+
 function initParticles() {
     const canvas = document.getElementById('particles');
     if (!canvas) return;
@@ -9,55 +220,27 @@ function initParticles() {
     let pConfig = {
         enabled: true,
         type: 'default',
+        timeZone: 'auto',
         color: 'rgba(255, 255, 255, 0.15)',
         speed: 0.5,
-        density: 12000
+        density: 12000,
+        dates: Object.assign({}, DEFAULT_DATES)
     };
 
     if (typeof CONFIG !== 'undefined' && CONFIG.ANIMATION && CONFIG.ANIMATION.PARTICLES) {
         const c = CONFIG.ANIMATION.PARTICLES;
         pConfig.enabled = c.ENABLED !== undefined ? c.ENABLED : pConfig.enabled;
         pConfig.type = c.TYPE || 'default';
+        pConfig.timeZone = c.TIMEZONE || 'auto';
         pConfig.color = c.COLOR || pConfig.color;
         pConfig.speed = c.SPEED || pConfig.speed;
         pConfig.density = c.DENSITY || pConfig.density;
-        pConfig.dates = c.DATES || {
-            HALLOWEEN: { start: '10-25', end: '10-31' },
-            FIREWORKS: { start: '12-31', end: '01-01' },
-            EASTER:    { start: '03-25', end: '04-15' },
-            WINTER:    { start: '12-01', end: '02-28' },
-            SPRING:    { start: '03-01', end: '05-31' },
-            SUMMER:    { start: '06-01', end: '08-31' },
-            AUTUMN:    { start: '09-01', end: '11-30' }
-        };
-    }
-
-    if (pConfig.type === 'auto') {
-        const date = new Date();
-        const currentVal = (date.getMonth() + 1) * 100 + date.getDate();
-
-        const checkDate = (range) => {
-            if (!range) return false;
-            const [sM, sD] = range.start.split('-').map(Number);
-            const [eM, eD] = range.end.split('-').map(Number);
-            const start = sM * 100 + sD;
-            const end = eM * 100 + eD;
-
-            if (start <= end) return currentVal >= start && currentVal <= end;
-            else return currentVal >= start || currentVal <= end;
-        };
-
-        if (checkDate(pConfig.dates.HALLOWEEN)) pConfig.type = 'halloween';
-        else if (checkDate(pConfig.dates.FIREWORKS)) pConfig.type = 'fireworks';
-        else if (checkDate(pConfig.dates.EASTER)) pConfig.type = 'easter';
-        else if (checkDate(pConfig.dates.WINTER)) pConfig.type = 'winter';
-        else if (checkDate(pConfig.dates.SPRING)) pConfig.type = 'spring';
-        else if (checkDate(pConfig.dates.SUMMER)) pConfig.type = 'summer';
-        else if (checkDate(pConfig.dates.AUTUMN)) pConfig.type = 'autumn';
-        else pConfig.type = 'winter';
+        pConfig.dates = Object.assign({}, DEFAULT_DATES, c.DATES || {});
     }
 
     if (!pConfig.enabled) return;
+
+    pConfig.type = resolveParticleType(pConfig.type, pConfig.dates, pConfig.timeZone);
 
     let particlesArray = [];
     const autumnColors = ['#d35400', '#e67e22', '#f39c12', '#c0392b', '#8e44ad', '#27ae60', '#795548', '#d84315'];
@@ -398,3 +581,9 @@ function initParticles() {
 
     return pConfig.type;
 }
+
+initParticles.resolveType = resolveParticleType;
+initParticles.getEasterDateRange = getEasterDateRange;
+initParticles.isSouthernHemisphere = isSouthernHemisphere;
+global.initParticles = initParticles;
+})(typeof window !== 'undefined' ? window : globalThis);

@@ -34,9 +34,18 @@ const CONFIG = {
         // Particle effects (snow, leaves, etc.)
         PARTICLES: {
             ENABLED: true,
-            TYPE: 'auto',   // 'auto', 'winter', 'summer', 'spring', 'autumn', 'halloween', 'fireworks', 'easter'
-            
-            // Date ranges for 'auto' mode (Format: 'MM-DD')
+
+            // Selection mode:
+            //   'timezone' -> Automatic by TIMEZONE & hemisphere (seasons + holidays + dynamic Easter)
+            //   'dates'    -> Automatic by custom DATES below
+            //   Fixed      -> 'winter', 'summer', 'spring', 'autumn', 'halloween', 'fireworks', 'easter'
+            TYPE: 'Europe/Berlin',
+
+            // Only used when TYPE is 'timezone' (or 'auto'):
+            //   'auto' = visitor's browser timezone, or e.g. 'Europe/Berlin', 'Australia/Sydney'
+            TIMEZONE: 'auto',
+
+            // Only used when TYPE is 'dates' (Format: 'MM-DD'):
             DATES: {
                 HALLOWEEN: { start: '10-25', end: '10-31' },
                 FIREWORKS: { start: '12-31', end: '01-01' },
@@ -47,7 +56,8 @@ const CONFIG = {
                 AUTUMN:    { start: '09-01', end: '10-24' }
             }
         },
-        // Other effects
+
+        // UI & card effects
         BACKGROUND_BREATHE: true,
         CARD_TILT: true,
         TYPING_EFFECT: true,

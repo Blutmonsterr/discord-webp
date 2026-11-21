@@ -70,10 +70,11 @@ const CONFIG = {
 
 ### Partikel-Effekte (Jahreszeiten)
 
-Unter `ANIMATION.PARTICLES.TYPE` kannst du den Effekt einstellen:
+Unter `ANIMATION.PARTICLES.TYPE` legst du fest, wie der Partikel-Effekt gewählt wird:
 
-*   `'auto'`: Wählt automatisch basierend auf dem Datum den passenden Effekt (z.B. Halloween Ende Oktober).
-*   `'winter'`, `'spring'`, `'summer'`, `'autumn'`, `'halloween'`, `'fireworks'`: Erzwingt einen bestimmten Effekt.
+*   `'timezone'` (oder `'auto'`): Ermittelt Datum, bewegliches Ostern und Jahreszeit automatisch anhand von `ANIMATION.PARTICLES.TIMEZONE` (`'auto'` für die Browser-Zeitzone des Besuchers oder z. B. `'Europe/Berlin'` / `'Australia/Sydney'` inkl. Nord-/Südhalbkugel).
+*   `'dates'`: Nutzt ausschließlich die eigenen Datumsbereiche aus `ANIMATION.PARTICLES.DATES`.
+*   `'winter'`, `'spring'`, `'summer'`, `'autumn'`, `'halloween'`, `'fireworks'`, `'easter'`: Erzwingt direkt einen bestimmten Effekt.
 
 ## 🛠️ Technologien
 
@@ -154,10 +155,11 @@ const CONFIG = {
 
 ### Particle Effects (Seasons)
 
-Under `ANIMATION.PARTICLES.TYPE` you can set the effect:
+Under `ANIMATION.PARTICLES.TYPE` you choose how the particle effect is selected:
 
-*   `'auto'`: Automatically selects the appropriate effect based on the date (e.g., Halloween in late October).
-*   `'winter'`, `'spring'`, `'summer'`, `'autumn'`, `'halloween'`, `'fireworks'`: Forces a specific effect.
+*   `'timezone'` (or `'auto'`): Automatically determines date, dynamic Easter, and season from `ANIMATION.PARTICLES.TIMEZONE` (`'auto'` for the visitor's browser timezone, or e.g. `'Europe/Berlin'` / `'Australia/Sydney'` including Northern/Southern Hemisphere).
+*   `'dates'`: Uses only the custom date ranges from `ANIMATION.PARTICLES.DATES`.
+*   `'winter'`, `'spring'`, `'summer'`, `'autumn'`, `'halloween'`, `'fireworks'`, `'easter'`: Forces a specific effect directly.
 
 ## 🛠️ Technologies
 
