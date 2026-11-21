@@ -9,18 +9,16 @@
         AUTUMN:    { start: '09-01', end: '10-24' }
     };
 
-    // Standard meteorological seasons & fixed holidays used in 'timezone' (and 'auto') mode
-    const TIMEZONE_HOLIDAYS = {
-        HALLOWEEN: { start: '10-25', end: '10-31' },
-        FIREWORKS: { start: '12-31', end: '01-01' }
-    };
-
-    const TIMEZONE_SEASONS = {
-        WINTER: { start: '12-01', end: '02-29' },
-        SPRING: { start: '03-01', end: '05-31' },
-        SUMMER: { start: '06-01', end: '08-31' },
-        AUTUMN: { start: '09-01', end: '11-30' }
-    };
+    const FIXED_TYPES = new Set([
+        'default',
+        'winter',
+        'spring',
+        'summer',
+        'autumn',
+        'halloween',
+        'fireworks',
+        'easter'
+    ]);
 
     const SOUTHERN_PREFIXES = [
         'Australia/',
@@ -189,24 +187,30 @@
     }
 
     /**
-     * Resolves the active particle type from selection mode ('timezone', 'auto', 'dates', or fixed).
+     * Resolves the active particle type from TYPE ('timezone', 'auto', 'dates', or fixed effect).
      */
     function resolveParticleType(mode, dates, configuredTimeZone, now = new Date()) {
-        if (mode === 'timezone' || mode === 'auto') {
-            const timeZone = resolveParticleTimeZone(configuredTimeZone);
-            const { year, month, day } = getDateInTimeZone(timeZone, now);
-            const timezoneRanges = Object.assign({}, TIMEZONE_HOLIDAYS, { EASTER: 'auto' }, TIMEZONE_SEASONS);
-            return matchSeasonOrHoliday(timezoneRanges, year, month * 100 + day, isSouthernHemisphere(timeZone));
+        const mergedDates = Object.assign({}, DEFAULT_DATES, dates || {});
+        const normalizedMode = typeof mode === 'string' ? mode.trim() : 'default';
+        const lowerMode = normalizedMode.toLowerCase();
+
+        if (FIXED_TYPES.has(lowerMode)) {
+            return lowerMode;
         }
 
-        if (mode === 'dates') {
-            const mergedDates = Object.assign({}, DEFAULT_DATES, dates || {});
+        if (lowerMode === 'dates') {
             const year = now.getFullYear();
             const currentVal = (now.getMonth() + 1) * 100 + now.getDate();
             return matchSeasonOrHoliday(mergedDates, year, currentVal, false);
         }
 
-        return mode;
+        if (lowerMode !== 'timezone' && lowerMode !== 'auto') {
+            console.warn(`Invalid particle TYPE "${mode}". Use 'timezone', 'auto', 'dates', or a fixed effect (put timezones in TIMEZONE). Falling back to 'timezone'.`);
+        }
+
+        const timeZone = resolveParticleTimeZone(configuredTimeZone);
+        const { year, month, day } = getDateInTimeZone(timeZone, now);
+        return matchSeasonOrHoliday(mergedDates, year, month * 100 + day, isSouthernHemisphere(timeZone));
     }
 
 function initParticles() {

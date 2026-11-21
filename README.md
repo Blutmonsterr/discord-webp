@@ -72,8 +72,8 @@ const CONFIG = {
 
 Unter `ANIMATION.PARTICLES.TYPE` legst du fest, wie der Partikel-Effekt gewählt wird:
 
-*   `'timezone'` (oder `'auto'`): Ermittelt Datum, bewegliches Ostern und Jahreszeit automatisch anhand von `ANIMATION.PARTICLES.TIMEZONE` (`'auto'` für die Browser-Zeitzone des Besuchers oder z. B. `'Europe/Berlin'` / `'Australia/Sydney'` inkl. Nord-/Südhalbkugel).
-*   `'dates'`: Nutzt ausschließlich die eigenen Datumsbereiche aus `ANIMATION.PARTICLES.DATES`.
+*   `'timezone'` oder `'auto'`: Ermittelt Datum, Feiertage (Halloween, Silvester, Ostern) und Jahreszeiten automatisch anhand von `ANIMATION.PARTICLES.TIMEZONE` (`'auto'` für die Browser-Zeitzone des Besuchers oder z. B. `'Europe/Berlin'` / `'Australia/Sydney'` inkl. Nord-/Südhalbkugel).
+*   `'dates'`: Nutzt `ANIMATION.PARTICLES.DATES` direkt mit der lokalen Browser-Zeit ohne Halbkugel-Umkehrung.
 *   `'winter'`, `'spring'`, `'summer'`, `'autumn'`, `'halloween'`, `'fireworks'`, `'easter'`: Erzwingt direkt einen bestimmten Effekt.
 
 ## 🛠️ Technologien
@@ -157,8 +157,8 @@ const CONFIG = {
 
 Under `ANIMATION.PARTICLES.TYPE` you choose how the particle effect is selected:
 
-*   `'timezone'` (or `'auto'`): Automatically determines date, dynamic Easter, and season from `ANIMATION.PARTICLES.TIMEZONE` (`'auto'` for the visitor's browser timezone, or e.g. `'Europe/Berlin'` / `'Australia/Sydney'` including Northern/Southern Hemisphere).
-*   `'dates'`: Uses only the custom date ranges from `ANIMATION.PARTICLES.DATES`.
+*   `'timezone'` or `'auto'`: Automatically determines date, holidays (Halloween, New Year, Easter), and seasons using `ANIMATION.PARTICLES.TIMEZONE` (`'auto'` for the visitor's browser timezone, or e.g. `'Europe/Berlin'` / `'Australia/Sydney'` including Northern/Southern Hemisphere).
+*   `'dates'`: Uses `ANIMATION.PARTICLES.DATES` directly with local browser time without hemisphere inversion.
 *   `'winter'`, `'spring'`, `'summer'`, `'autumn'`, `'halloween'`, `'fireworks'`, `'easter'`: Forces a specific effect directly.
 
 ## 🛠️ Technologies

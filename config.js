@@ -36,16 +36,18 @@ const CONFIG = {
             ENABLED: true,
 
             // Selection mode:
-            //   'timezone' -> Automatic by TIMEZONE & hemisphere (seasons + holidays + dynamic Easter)
-            //   'dates'    -> Automatic by custom DATES below
-            //   Fixed      -> 'winter', 'summer', 'spring', 'autumn', 'halloween', 'fireworks', 'easter'
-            TYPE: 'Europe/Berlin',
+            //   'timezone' / 'auto' -> Automatic using TIMEZONE below (seasons + holidays)
+            //   'dates'             -> Automatic using DATES literally (local browser date, no hemisphere flip)
+            //   Fixed effect        -> 'winter', 'summer', 'spring', 'autumn', 'halloween', 'fireworks', 'easter'
+            TYPE: 'timezone',
 
-            // Only used when TYPE is 'timezone' (or 'auto'):
-            //   'auto' = visitor's browser timezone, or e.g. 'Europe/Berlin', 'Australia/Sydney'
-            TIMEZONE: 'auto',
+            // Used when TYPE is 'timezone' or 'auto':
+            //   'auto' = visitor's browser timezone, or IANA timezone (e.g. 'Europe/Berlin', 'Australia/Sydney')
+            TIMEZONE: 'Europe/Berlin',
 
-            // Only used when TYPE is 'dates' (Format: 'MM-DD'):
+            // Date ranges for 'timezone', 'auto', and 'dates' modes (Format: 'MM-DD'):
+            //   Seasons invert automatically on the Southern Hemisphere unless TYPE is 'dates'.
+            //   EASTER also accepts 'auto' to compute Easter dynamically each year.
             DATES: {
                 HALLOWEEN: { start: '10-25', end: '10-31' },
                 FIREWORKS: { start: '12-31', end: '01-01' },
