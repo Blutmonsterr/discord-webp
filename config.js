@@ -1,7 +1,7 @@
 const CONFIG = {
     // Server ID (Right click on Server -> Copy ID)
     SERVER_ID: '324167053516734465', // '324167053516734465' for Daddeln.at
-    BACKUP_CODE: 'X6bgxcN', // Optional: Backup code for fetching data if API fails (e.g., from a previous successful fetch)
+    BACKUP_CODE: 'FyUC9Quu5T', // Optional: Backup code for fetching data if API fails (e.g., from a previous successful fetch)
     // Language ('de' or 'en')
     LANGUAGE: 'de',
 
